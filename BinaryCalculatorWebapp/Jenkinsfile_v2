@@ -23,13 +23,6 @@ pipeline {
                 command:
                 - cat
                 tty: true
-                volumeMounts:
-                - name: docker-sock
-                  mountPath: /var/run/docker.sock
-              volumes:
-              - name: docker-sock
-                hostPath:
-                  path: /var/run/docker.sock
             """
         }
     }
@@ -51,6 +44,7 @@ pipeline {
             steps{
                 container('gcloud') {
                     dir('BinaryCalculatorWebapp'){
+                        sh 'apt-get install -y docker.io 2>/dev/null || true'
                         sh 'gcloud config set project $PROJECT'
                         sh 'gcloud auth configure-docker --quiet'
                         sh 'docker build -t $IMAGE_TAG .'
