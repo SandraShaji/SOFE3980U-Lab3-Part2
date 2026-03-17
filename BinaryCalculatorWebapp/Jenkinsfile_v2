@@ -41,15 +41,15 @@ pipeline {
             }
         }
         stage('containerize'){
-    steps{
-        container('gcloud') {
-            dir('BinaryCalculatorWebapp'){
-                sh 'gcloud config set project $PROJECT'
-                sh 'gcloud builds submit -t $IMAGE_TAG --suppress-logs'
+            steps{
+                container('gcloud') {
+                    dir('BinaryCalculatorWebapp'){
+                        sh 'gcloud config set project $PROJECT'
+                        sh 'gcloud builds submit -t $IMAGE_TAG --suppress-logs'
+                    }
+                }
             }
         }
-    }
-}
         stage('deployment'){
             steps{
                 container('gcloud') {
