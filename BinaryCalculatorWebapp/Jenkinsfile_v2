@@ -41,18 +41,15 @@ pipeline {
             }
         }
         stage('containerize'){
-            steps{
-                container('gcloud') {
-                    dir('BinaryCalculatorWebapp'){
-                        sh 'apt-get install -y docker.io 2>/dev/null || true'
-                        sh 'gcloud config set project $PROJECT'
-                        sh 'gcloud auth configure-docker --quiet'
-                        sh 'docker build -t $IMAGE_TAG .'
-                        sh 'docker push $IMAGE_TAG'
-                    }
-                }
+    steps{
+        container('gcloud') {
+            dir('BinaryCalculatorWebapp'){
+                sh 'gcloud config set project $PROJECT'
+                sh 'gcloud builds submit -t $IMAGE_TAG --suppress-logs'
             }
         }
+    }
+}
         stage('deployment'){
             steps{
                 container('gcloud') {
