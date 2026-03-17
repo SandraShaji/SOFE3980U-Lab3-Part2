@@ -19,10 +19,17 @@ pipeline {
             spec:
               containers:
               - name: gcloud
-                image:  google/cloud-sdk:latest
+                image: google/cloud-sdk:latest
                 command:
                 - cat
                 tty: true
+                volumeMounts:
+                - name: docker-sock
+                  mountPath: /var/run/docker.sock
+              volumes:
+              - name: docker-sock
+                hostPath:
+                  path: /var/run/docker.sock
             """
         }
     }
@@ -45,7 +52,9 @@ pipeline {
                 container('gcloud') {
                     dir('BinaryCalculatorWebapp'){
                         sh 'gcloud config set project $PROJECT'
-                        sh 'gcloud builds submit -t $IMAGE_TAG --suppress-logs'
+                        sh 'gcloud auth configure-docker --quiet'
+                        sh 'docker build -t $IMAGE_TAG .'
+                        sh 'docker push $IMAGE_TAG'
                     }
                 }
             }
